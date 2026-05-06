@@ -1,4 +1,4 @@
-# Bedtime Story Generation System (Take-Home Assignment)
+# Bedtime Story Generation System
 
 ## 1. Project Overview
 This project generates bedtime stories for children ages 5-10. It collects a story idea, child age, desired length, mood, and an optional lesson/message.
