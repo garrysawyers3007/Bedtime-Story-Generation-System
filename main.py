@@ -1,5 +1,7 @@
 import argparse
 import os
+import sys
+import time
 from openai import APIConnectionError, APIError, AuthenticationError, OpenAI, RateLimitError
 from safety import validate_initial_request, validate_user_feedback
 from story_prompt import build_story_prompt
@@ -197,11 +199,23 @@ def print_judge_result(judge_result: dict) -> None:
     print(f"Revision Trigger: {judge_result.get('revision_trigger', 'none')}")
 
 
-def print_story_section(story_text: str, accepted: bool, status_text: str) -> None:
+def print_story_typewriter(story: str, delay: float = 0.15) -> None:
+    for char in story:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    if not story.endswith("\n"):
+        print()
+
+
+def print_story_section(story_text: str, accepted: bool, status_text: str, use_typewriter: bool = False) -> None:
     header = "Final Story:" if accepted else "Best Available Story:"
     print(f"\n{header}")
     print("-" * 50)
-    print(story_text)
+    if use_typewriter:
+        print_story_typewriter(story_text)
+    else:
+        print(story_text)
     print("-" * 50)
     print(f"\nStory Status: {status_text}")
 
@@ -263,7 +277,12 @@ def main(debug: bool = False) -> None:
         "'make it funnier', 'make the ending calmer', etc.)\n"
     ).strip()
 
+    typewriter_choice = input("Show story with typewriter animation? (Y/n): ").strip().lower()
+    use_typewriter = typewriter_choice in {"", "y", "yes"}
+
     if not user_feedback:
+        if use_typewriter:
+            print_story_section(story, accepted, story_status, use_typewriter=True)
         return
 
     is_safe_feedback, _ = validate_user_feedback(user_feedback)
@@ -287,7 +306,7 @@ def main(debug: bool = False) -> None:
         else "Best draft after review, but still needs revision"
     )
 
-    print_story_section(updated_story, updated_accepted, updated_story_status)
+    print_story_section(updated_story, updated_accepted, updated_story_status, use_typewriter=use_typewriter)
     print_quality_summary(updated_judge_result)
     if debug:
         print("\nUpdated Evaluation Result")

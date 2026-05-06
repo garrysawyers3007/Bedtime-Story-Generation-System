@@ -29,6 +29,7 @@ This implementation is a multi-step generation and quality loop, not a one-shot 
 - One-round user feedback loop
 - Safety handling for inappropriate requests or feedback
 - Clean default output for normal users, plus optional detailed debug output for reviewers
+- Optional terminal typewriter animation for story display
 
 ## 4. System Block Diagram
 ```text
@@ -128,6 +129,7 @@ Output behavior:
    - `Quality Status: ACCEPTED` or `Quality Status: NEEDS REVISION`
    - `Reason` when not accepted (first rule-based blocking issue, otherwise first LLM issue)
 - Debug mode prints the full LLM judge and rule-based breakdown using the detailed evaluation sections.
+- The CLI asks `Show story with typewriter animation? (Y/n):` after the feedback prompt. This question is asked even if feedback is empty.
 
 Do not commit your API key or any secrets to source control.
 
